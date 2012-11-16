@@ -54,9 +54,14 @@ public class MyActivity extends Activity {
             }
         };
 
-        currentSession = new Session.Builder(this).build();
-        currentSession.addCallback(sessionStatusCallback);
-        currentSession.openForRead( new Session.OpenRequest(this).setLoginBehavior(SessionLoginBehavior.SSO_WITH_FALLBACK).setRequestCode(Session.DEFAULT_AUTHORIZE_ACTIVITY_CODE));
+        currentSession = Session.openActiveSession(this);
+        if (currentSession == null || currentSession.isOpened()==false){
+            currentSession = new Session.Builder(this).build();
+            currentSession.addCallback(sessionStatusCallback);
+            currentSession.openForRead( new Session.OpenRequest(this).setLoginBehavior(SessionLoginBehavior.SSO_WITH_FALLBACK).setRequestCode(Session.DEFAULT_AUTHORIZE_ACTIVITY_CODE));
+        } else {
+            sessionStatusCallback.call(currentSession,currentSession.getState(),null);
+        }
     }
 
     @Override
